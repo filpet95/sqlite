@@ -12,6 +12,6 @@ export default {
       exports: 'named',
     },
   ],
-  external: ['@capacitor/core', 'sqlite3', 'path', 'fs', 'os', 'jszip'],
+  external: ['@capacitor/core', '@journeyapps/sqlcipher', 'path', 'fs', 'os', 'jszip'],
   plugins: [nodeResolve(), commonjs()],
 };

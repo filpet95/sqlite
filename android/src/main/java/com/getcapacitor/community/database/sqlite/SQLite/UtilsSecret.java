@@ -20,10 +20,12 @@ public class UtilsSecret {
 
     private SharedPreferences sharedPreferences;
     private Context context;
+    private String RAMSecret;
 
     public UtilsSecret(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
+        this.RAMSecret = null;
     }
 
     /**
@@ -110,8 +112,16 @@ public class UtilsSecret {
         sharedPreferences.edit().putString("secret", passphrase).apply();
     }
 
+    public void setRAMEncryptionSecret(String passphrase) {
+        this.RAMSecret = passphrase;
+    }
+
     public String getPassphrase() {
         String passphrase = sharedPreferences.getString("secret", "");
         return passphrase;
+    }
+
+    public String getRAMEncryptionSecret() {
+        return this.RAMSecret;
     }
 }

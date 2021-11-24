@@ -1,10 +1,10 @@
 export class UtilsSQLite {
-  //  public JSQlite: any;
-  public SQLite3: any;
+  public JSQlite: any;
+  // public SQLite3: any;
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    //    this.JSQlite = require('@journeyapps/sqlcipher').verbose();
-    this.SQLite3 = require('sqlite3');
+    this.JSQlite = require('@journeyapps/sqlcipher').verbose();
+    // this.SQLite3 = require('sqlite3');
   }
   /**
    * OpenOrCreateDatabase
@@ -12,18 +12,18 @@ export class UtilsSQLite {
    * @param password
    */
   public async openOrCreateDatabase(
-    pathDB: string /*,
-    password: string,*/,
+    pathDB: string,
+    password: string,
   ): Promise<any> {
     const msg = 'OpenOrCreateDatabase: ';
     // open sqlite3 database
-    /*    const mDB: any = new this.JSQlite.Database(pathDB, {
+    const mDB: any = new this.JSQlite.Database(pathDB, {
       verbose: console.log,
     });
-    */
-    const mDB: any = new this.SQLite3.Database(pathDB, {
-      verbose: console.log,
-    });
+
+    // const mDB: any = new this.SQLite3.Database(pathDB, {
+    //   verbose: console.log,
+    // });
     if (mDB != null) {
       try {
         await this.dbChanges(mDB);
@@ -32,11 +32,11 @@ export class UtilsSQLite {
       }
 
       try {
-        /*        // set the password
+        // set the password
         if (password.length > 0) {
           await this.setCipherPragma(mDB, password);
         }
-*/
+
         // set Foreign Keys On
         await this.setForeignKeyConstraintsEnabled(mDB, true);
 
@@ -58,7 +58,6 @@ export class UtilsSQLite {
    * @param mDB
    * @param password
    */
-  /*
   public async setCipherPragma(mDB: any, password: string): Promise<void> {
     return new Promise((resolve, reject) => {
       mDB.serialize(() => {
@@ -72,7 +71,6 @@ export class UtilsSQLite {
       });
     });
   }
-*/
   /**
    * SetForeignKeyConstraintsEnabled
    * @param mDB
@@ -140,7 +138,6 @@ export class UtilsSQLite {
    * @param password
    * @param newpassword
    */
-  /*
 
   public async changePassword(
     pathDB: string,
@@ -157,14 +154,12 @@ export class UtilsSQLite {
       mDB.close();
     }
   }
-*/
   /**
    * PragmaReKey
    * @param mDB
    * @param password
    * @param newpassword
    */
-  /*
   private async pragmaReKey(
     mDB: any,
     password: string,
@@ -183,7 +178,6 @@ export class UtilsSQLite {
       });
     });
   }
-*/
   /**
    * BeginTransaction
    * @param db

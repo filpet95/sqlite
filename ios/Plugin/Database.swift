@@ -71,7 +71,11 @@ class Database {
     func open () throws {
         var password: String = ""
         if encrypted && (mode == "secret" || mode == "encryption") {
-            password = UtilsSecret.getPassphrase()
+            if let pw = UtilsSecret.getRAMEncryptionSecret(){
+                password = pw
+            }else{
+                password = UtilsSecret.getPassphrase()
+            }
         }
         if mode == "encryption" {
             do {

@@ -12,10 +12,12 @@ enum UtilsSecretError: Error {
     case setPassphrase(message: String)
     case changePassphrase(message: String)
     case setEncryptionSecret(message: String)
+    case setRAMEncryptionSecret(message: String)
     case  changeEncryptionSecret(message: String)
 }
 
 class UtilsSecret {
+    static var RAMSecret: String?
 
     // MARK: - IsPassphrase
 
@@ -37,6 +39,18 @@ class UtilsSecret {
             return password
         }
         return ""
+    }
+
+    // MARK: - GetPassphrase
+
+    class func getRAMEncryptionSecret() -> String? {
+        return RAMSecret
+    }
+
+    // MARK: - setRAMEncryptionSecret
+
+    class func setRAMEncryptionSecret(passphrase: String) throws {
+        RAMSecret = passphrase
     }
 
     // MARK: - SetPassphrase

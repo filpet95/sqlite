@@ -12,6 +12,7 @@
 * [`saveToStore(...)`](#savetostore)
 * [`echo(...)`](#echo)
 * [`isSecretStored()`](#issecretstored)
+* [`setRAMEncryptionSecret(...)`](#setramencryptionsecret)
 * [`setEncryptionSecret(...)`](#setencryptionsecret)
 * [`changeEncryptionSecret(...)`](#changeencryptionsecret)
 * [`addUpgradeStatement(...)`](#addupgradestatement)
@@ -105,10 +106,10 @@ Check if a secret is stored
 --------------------
 
 
-### setEncryptionSecret(...)
+### setRAMEncryptionSecret(...)
 
 ```typescript
-setEncryptionSecret(passphrase: string) => Promise<void>
+setRAMEncryptionSecret(passphrase: string) => Promise<void>
 ```
 
 Set a passphrase in a secure store
@@ -118,6 +119,25 @@ Set a passphrase in a secure store
 | **`passphrase`** | <code>string</code> |
 
 **Since:** 3.0.0-beta.13
+
+--------------------
+
+
+### setEncryptionSecret(...)
+
+```typescript
+setEncryptionSecret(passphrase: string) => Promise<void>
+```
+
+Set the passphrase of the secure storage to the RAM memory
+If this value is set, the plugin overlet the responsibility 
+of storing the secret passphrase to the application.
+
+| Param            | Type                |
+| ---------------- | ------------------- |
+| **`passphrase`** | <code>string</code> |
+
+**Since:** 3.1.16
 
 --------------------
 

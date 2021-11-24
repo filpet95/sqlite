@@ -117,7 +117,7 @@ public class Database {
     public void open() throws Exception {
         int curVersion;
 
-        String password = _encrypted && (_mode.equals("secret") || _mode.equals("encryption")) ? _uSecret.getPassphrase() : "";
+        String password = _encrypted && (_mode.equals("secret") || _mode.equals("encryption")) ? (_uSecret.getRAMEncryptionSecret() == null ? _uSecret.getPassphrase() : _uSecret.getRAMEncryptionSecret()) : "";
         if (_mode.equals("encryption")) {
             try {
                 _uCipher.encrypt(_context, _file, SQLiteDatabase.getBytes(password.toCharArray()));

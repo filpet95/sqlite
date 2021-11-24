@@ -88,6 +88,10 @@ export class CapacitorSQLiteWeb
     console.log('setEncryptionSecret', options);
     throw this.unimplemented('Not implemented on web.');
   }
+  async setRAMEncryptionSecret(options: capSetSecretOptions): Promise<void> {
+    console.log('setRAMEncryptionSecret', options);
+    throw this.unimplemented('Not implemented on web.');
+  }
   async changeEncryptionSecret(options: capChangeSecretOptions): Promise<void> {
     console.log('changeEncryptionSecret', options);
     throw this.unimplemented('Not implemented on web.');

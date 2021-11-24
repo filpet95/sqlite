@@ -100,6 +100,22 @@ public class CapacitorSQLite {
     }
 
     /**
+     * SetRAMEncryptionSecret
+     * @param passphrase
+     * @throws Exception
+     */
+    public void setRAMEncryptionSecret(String passphrase) throws Exception {
+        try {
+            // close all connections
+            closeAllConnections();
+            // set encryption secret
+            uSecret.setRAMEncryptionSecret(passphrase);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    /**
      * ChangeEncryptionSecret
      * @param passphrase
      * @param oldPassphrase

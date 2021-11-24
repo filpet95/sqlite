@@ -40,6 +40,20 @@ enum CapacitorSQLiteError: Error {
         }
     }
 
+    // MARK: - SetEncryptionSecret
+
+    @objc public func setRAMEncryptionSecret(passphrase: String) throws {
+        do {
+            // close all connections
+            try closeAllConnections()
+            // set encryption secret
+            try UtilsSecret.setRAMEncryptionSecret(passphrase: passphrase)
+            return
+        }  catch let error {
+            throw CapacitorSQLiteError.failed(message: "\(error)")
+        }
+    }
+
     // MARK: - ChangeEncryptionSecret
 
     @objc public func changeEncryptionSecret(passphrase: String,

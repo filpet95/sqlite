@@ -1,4 +1,4 @@
-//import { GlobalSQLite } from '../GlobalSQLite';
+import { GlobalSQLite } from '../GlobalSQLite';
 import type {
   capSQLiteVersionUpgrade,
   JsonSQLite,
@@ -7,7 +7,7 @@ import type {
 import { ExportToJson } from './ImportExportJson/exportToJson';
 import { ImportFromJson } from './ImportExportJson/importFromJson';
 import { UtilsJson } from './ImportExportJson/utilsJson';
-//import { UtilsEncryption } from './utilsEncryption';
+import { UtilsEncryption } from './utilsEncryption';
 import { UtilsFile } from './utilsFile';
 import { UtilsSQLite } from './utilsSQLite';
 import { UtilsUpgrade } from './utilsUpgrade';
@@ -15,15 +15,15 @@ import { UtilsUpgrade } from './utilsUpgrade';
 export class Database {
   private _isDBOpen: boolean;
   private _dbName: string;
-  //  private _encrypted: boolean;
-  //  private _mode: string;
+  private _encrypted: boolean;
+  private _mode: string;
   private _version: number;
   private _pathDB: string;
   private _uFile: UtilsFile = new UtilsFile();
   private _uSQLite: UtilsSQLite = new UtilsSQLite();
   private _uJson: UtilsJson = new UtilsJson();
-  //  private _uGlobal: GlobalSQLite = new GlobalSQLite();
-  //  private _uEncrypt: UtilsEncryption = new UtilsEncryption();
+  private _uGlobal: GlobalSQLite;
+  private _uEncrypt: UtilsEncryption = new UtilsEncryption();
   private _uUpg: UtilsUpgrade = new UtilsUpgrade();
   private _iFJson: ImportFromJson = new ImportFromJson();
   private _eTJson: ExportToJson = new ExportToJson();
@@ -32,18 +32,20 @@ export class Database {
 
   constructor(
     dbName: string,
-    //    encrypted: boolean,
-    //    mode: string,
+    encrypted: boolean,
+    mode: string,
     version: number,
     upgDict: Record<number, capSQLiteVersionUpgrade>,
+    uGlobal?: GlobalSQLite
   ) {
     this._dbName = dbName;
-    //    this._encrypted = encrypted;
-    //    this._mode = mode;
+    this._encrypted = encrypted;
+    this._mode = mode;
     this._version = version;
     this._vUpgDict = upgDict;
     this._pathDB = this._uFile.getFilePath(dbName);
     this._isDBOpen = false;
+    this._uGlobal = uGlobal ? uGlobal : new GlobalSQLite();
 
     if (this._pathDB.length === 0)
       throw new Error('Could not generate a path to ' + dbName);
@@ -59,20 +61,32 @@ export class Database {
     return this._isDBOpen;
   }
   /**
+   * setRAMSecret
+   * Sets the RAM secret to the global sqlite object.
+   * @returns Promise<void>
+   */
+  async setRAMSecret(secret: string | undefined): Promise<void> {
+    if (this._uGlobal != null) {
+      this._uGlobal.RAMSecret = secret;
+      Promise.resolve();
+    } else {
+      return Promise.reject(`setRAMSecret: Failed to set RAM Secet.`);
+    }
+  }
+  /**
    * Open
    * open the @journeyapps/sqlcipher sqlite3 database
    * @returns Promise<boolean>
    */
   async open(): Promise<void> {
     this._isDBOpen = false;
-    //    let password = '';
+    let password = '';
     try {
-      /*
       if (
         this._encrypted &&
         (this._mode === 'secret' || this._mode === 'encryption')
       ) {
-        password = this._uGlobal.secret;
+        password = this._uGlobal.RAMSecret ? this._uGlobal.RAMSecret : this._uGlobal.secret;
       }
       if (this._mode === 'newsecret') {
         // change the password
@@ -85,10 +99,9 @@ export class Database {
       if (this._mode === 'encryption') {
         await this._uEncrypt.encryptDatabase(this._pathDB, password);
       }
-*/
       this._mDB = await this._uSQLite.openOrCreateDatabase(
-        this._pathDB /*,
-        password,*/,
+        this._pathDB,
+        password,
       );
 
       const curVersion: number = await this._uSQLite.getVersion(this._mDB);

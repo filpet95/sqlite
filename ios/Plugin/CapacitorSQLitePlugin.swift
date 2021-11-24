@@ -79,6 +79,32 @@ public class CapacitorSQLitePlugin: CAPPlugin {
         }
     }
 
+    // MARK: - SetRAMEncryptionSecret
+
+    @objc func setRAMEncryptionSecret(_ call: CAPPluginCall) {
+
+        guard let passphrase = call.options["passphrase"] as? String else {
+            retHandler.rResult(
+                call: call,
+                message: "setRAMEncryptionSecret: Must provide a passphrase")
+            return
+        }
+        do {
+            try implementation.setRAMEncryptionSecret(passphrase: passphrase)
+            retHandler.rResult(call: call)
+            return
+        } catch CapacitorSQLiteError.failed(let message) {
+            let msg = "setRAMEncryptionSecret: \(message)"
+            retHandler.rResult(call: call, message: msg)
+            return
+        } catch let error {
+            retHandler.rResult(
+                call: call,
+                message: "setRAMEncryptionSecret: \(error)")
+            return
+        }
+    }
+
     // MARK: - ChangeEncryptionSecret
 
     @objc func changeEncryptionSecret(_ call: CAPPluginCall) {

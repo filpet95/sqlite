@@ -100,6 +100,30 @@ public class CapacitorSQLitePlugin extends Plugin {
     }
 
     /**
+     * SetRAMEncryptionSecret
+     * set a passphrase secret for a database
+     * @param call
+     */
+    @PluginMethod
+    public void setRAMEncryptionSecret(PluginCall call) {
+        String passphrase = null;
+        if (!call.getData().has("passphrase")) {
+            String msg = "setRAMEncryptionSecret: Must provide a passphrase";
+            rHandler.retResult(call, null, msg);
+            return;
+        }
+        passphrase = call.getString("passphrase");
+        try {
+            implementation.setRAMEncryptionSecret(passphrase);
+            rHandler.retResult(call, null, null);
+            return;
+        } catch (Exception e) {
+            String msg = "SetEncryptionSecret: " + e.getMessage();
+            rHandler.retResult(call, null, msg);
+            return;
+        }
+    }
+    /**
      * ChangeEncryptionSecret
      * change a passphrase secret for a database
      * with a new passphrase

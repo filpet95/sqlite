@@ -47,6 +47,16 @@ export interface CapacitorSQLitePlugin {
    * @return Promise<void>
    * @since 3.0.0-beta.13
    */
+  setRAMEncryptionSecret(options: capSetSecretOptions): Promise<void>;
+  /**
+   * Set the passphrase of the secure storage to the RAM memory
+   * If this value is set, the plugin overlet the responsibility 
+   * of storing the secret passphrase to the application.
+   *
+   * @param options capChangeSecretOptions
+   * @return Promise<void>
+   * @since 3.1.16
+   */
   changeEncryptionSecret(options: capChangeSecretOptions): Promise<void>;
 
   /**
@@ -674,6 +684,16 @@ export interface ISQLiteConnection {
    * @returns Promise<void>
    * @since 3.0.0-beta.13
    */
+  setRAMEncryptionSecret(passphrase: string): Promise<void>;
+  /**
+   * Set the passphrase of the secure storage to the RAM memory
+   * If this value is set, the plugin overlet the responsibility 
+   * of storing the secret passphrase to the application.
+   *
+   * @param passphrase
+   * @returns Promise<void>
+   * @since 3.1.16
+   */
   setEncryptionSecret(passphrase: string): Promise<void>;
   /**
    * Change the passphrase in a secure store
@@ -823,7 +843,7 @@ export interface ISQLiteConnection {
  */
 export class SQLiteConnection implements ISQLiteConnection {
   private _connectionDict: Map<string, SQLiteDBConnection> = new Map();
-  constructor(private sqlite: any) {}
+  constructor(private sqlite: any) { }
 
   async initWebStore(): Promise<void> {
     try {
@@ -857,7 +877,14 @@ export class SQLiteConnection implements ISQLiteConnection {
       return Promise.reject(err);
     }
   }
-
+  async setRAMEncryptionSecret(passphrase: string): Promise<void> {
+    try {
+      await this.sqlite.setRAMEncryptionSecret({ passphrase: passphrase });
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
   async setEncryptionSecret(passphrase: string): Promise<void> {
     try {
       await this.sqlite.setEncryptionSecret({ passphrase: passphrase });
@@ -1195,7 +1222,7 @@ export interface ISQLiteDBConnection {
  * SQLiteDBConnection Class
  */
 export class SQLiteDBConnection implements ISQLiteDBConnection {
-  constructor(private dbName: string, private sqlite: any) {}
+  constructor(private dbName: string, private sqlite: any) { }
   getConnectionDBName(): string {
     return this.dbName;
   }

@@ -63,6 +63,7 @@ The plugin add a suffix "SQLite" and an extension ".db" to the database name giv
 * [`saveToStore(...)`](#savetostore)
 * [`isSecretStored()`](#issecretstored)
 * [`setEncryptionSecret(...)`](#setencryptionsecret)
+* [`setRAMEncryptionSecret(...)`](#setramencryptionsecret)
 * [`changeEncryptionSecret(...)`](#changeencryptionsecret)
 * [`createConnection(...)`](#createconnection)
 * [`closeConnection(...)`](#closeconnection)
@@ -168,21 +169,40 @@ Update the secret of previous encrypted databases with GlobalSQLite
 --------------------
 
 
-### changeEncryptionSecret(...)
+### setRAMEncryptionSecret(...)
 
 ```typescript
-changeEncryptionSecret(options: capChangeSecretOptions) => Promise<void>
+setRAMEncryptionSecret(options: capSetSecretOptions) => Promise<void>
 ```
 
 Change the passphrase in a secure store
 Update the secret of previous encrypted databases with passphrase
 in secure store
 
+| Param         | Type                                                                | Description                                                  |
+| ------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **`options`** | <code><a href="#capsetsecretoptions">capSetSecretOptions</a></code> | <a href="#capchangesecretoptions">capChangeSecretOptions</a> |
+
+**Since:** 3.0.0-beta.13
+
+--------------------
+
+
+### changeEncryptionSecret(...)
+
+```typescript
+changeEncryptionSecret(options: capChangeSecretOptions) => Promise<void>
+```
+
+Set the passphrase of the secure storage to the RAM memory
+If this value is set, the plugin overlet the responsibility 
+of storing the secret passphrase to the application.
+
 | Param         | Type                                                                      | Description                                                  |
 | ------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | **`options`** | <code><a href="#capchangesecretoptions">capChangeSecretOptions</a></code> | <a href="#capchangesecretoptions">capChangeSecretOptions</a> |
 
-**Since:** 3.0.0-beta.13
+**Since:** 3.1.16
 
 --------------------
 

@@ -29,6 +29,7 @@ import type {
 } from '../../src/definitions';
 
 import { Database } from './electron-utils/Database';
+import { GlobalSQLite } from './GlobalSQLite';
 import { UtilsJson } from './electron-utils/ImportExportJson/utilsJson';
 import { UtilsFile } from './electron-utils/utilsFile';
 
@@ -40,6 +41,7 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
   private _dbDict: any = {};
   private _uFile: UtilsFile = new UtilsFile();
   private _uJson: UtilsJson = new UtilsJson();
+  private _uGlobal: GlobalSQLite = new GlobalSQLite();
 
   async initWebStore(): Promise<void> {
     return Promise.reject('Method not implemented.');
@@ -55,6 +57,18 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     console.log(`${JSON.stringify(options)}`);
     return Promise.reject('Method not implemented.');
   }
+  async setRAMEncryptionSecret(options: capSetSecretOptions): Promise<void> {
+    let keys = Object.keys(options);
+    if (!keys.includes('passphrase')) {
+      return Promise.reject('Must provide a passphrase name');
+    }
+    const passphrase = options.passphrase;
+    if (passphrase?.length === 0) {
+      return Promise.reject('Must provide a nonzero passphrase name');
+    }
+    this._uGlobal.RAMSecret = passphrase;
+    return Promise.resolve()
+  }
   async changeEncryptionSecret(options: capChangeSecretOptions): Promise<void> {
     console.log(`${JSON.stringify(options)}`);
     return Promise.reject('Method not implemented.');
@@ -66,18 +80,18 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     }
     const dbName: string = options.database;
     const version: number = options.version ? options.version : 1;
-    /*    const encrypted = false;
-    const inMode = "no-encryption";
+    // const encrypted = false;
+    // const inMode = "no-encryption";
 
     const encrypted: boolean =
-      options.encrypted && this._osType === 'Darwin'
-        ? options.encrypted
-        : false;
+      options.encrypted ? options.encrypted : false;
     const inMode: string =
-      options.mode && this._osType === 'Darwin'
-        ? options.mode
-        : 'no-encryption';
-    */
+      options.mode === "secret"
+        ? "secret"
+        : options.mode === "encryption"
+          ? "encryption"
+          : 'no-encryption';
+
     let upgDict: Record<number, capSQLiteVersionUpgrade> = {};
     const vUpgKeys: string[] = Object.keys(this._versionUpgrades);
     if (vUpgKeys.length !== 0 && vUpgKeys.includes(dbName)) {
@@ -86,11 +100,11 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     try {
       const mDb: Database = new Database(
         dbName + 'SQLite.db',
-        /*        encrypted,
+        encrypted,
         inMode,
-*/
         version,
         upgDict,
+        this._uGlobal
       );
       this._dbDict[dbName] = mDb;
       return Promise.resolve();
@@ -108,8 +122,8 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     if (!keys.includes(dbName)) {
       return Promise.reject(
         'CloseConnection command failed: No ' +
-          'available connection for ' +
-          dbName,
+        'available connection for ' +
+        dbName,
       );
     }
 
@@ -121,10 +135,10 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
       } catch (err) {
         return Promise.reject(
           'CloseConnection command failed: ' +
-            'close ' +
-            dbName +
-            ' failed ' +
-            err,
+          'close ' +
+          dbName +
+          ' failed ' +
+          err,
         );
       }
     }
@@ -394,8 +408,8 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     if (!keys.includes(dbName)) {
       return Promise.reject(
         'isTableExists command failed: No available ' +
-          'connection for ' +
-          dbName,
+        'connection for ' +
+        dbName,
       );
     }
     const mDB = this._dbDict[dbName];
@@ -457,14 +471,14 @@ export class CapacitorSQLite implements CapacitorSQLitePlugin {
     const vJsonObj: JsonSQLite = jsonObj;
     const dbName = `${vJsonObj.database}SQLite.db`;
     const dbVersion: number = vJsonObj.version ?? 1;
-    //    const encrypted: boolean = vJsonObj.encrypted ?? false;
-    //    const mode: string = encrypted ? 'secret' : 'no-encryption';
+    const encrypted: boolean = vJsonObj.encrypted ?? false;
+    const mode: string = encrypted ? 'secret' : 'no-encryption';
 
     // Create the database
     const mDb: Database = new Database(
       dbName,
-      /*encrypted, mode, */ dbVersion,
-      {},
+      encrypted, mode, dbVersion,
+      {}, this._uGlobal
     );
     try {
       // Open the database
